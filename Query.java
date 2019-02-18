@@ -1,4 +1,4 @@
-/* Parth Goel, Humad Syed, Vincent Tran */import java.util.Properties;
+import java.util.Properties;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -49,17 +49,7 @@ public class Query {
     
     /* Queries for fast search */
     /* Define any queries you use for fastsearch here */
-    private String _director_fast_sql = "SELECT x.id, z.* "
-                     + "FROM movie x, movie_directors y, directors z "
-                     + "WHERE upper(x.name) like upper(?) and x.id = y.mid and y.did = z.id "
-                     + "ORDER BY x.id";
-    private PreparedStatement _director_fast_statement;
-
-    private String _actor_fast_sql = "SELECT x.id, z.* "
-                     + "FROM movie x, casts y, actor z "
-                     + "WHERE upper(x.name) like upper(?) and x.id = y.mid and y.pid = z.id "
-                     + "ORDER BY x.id";
-    private PreparedStatement _actor_fast_statement;
+    
     
     /* End of fast search queries*/
     
@@ -188,8 +178,7 @@ public class Query {
         _director_mid_statement = _imdb.prepareStatement(_director_mid_sql);
         
         /* add any prepare statements for your fastsearch here */
-        _director_fast_statement = _imdb.prepareStatement(_director_fast_sql);
-        _actor_fast_statement = _imdb.prepareStatement(_actor_fast_sql);
+        
         /* end of fastsearch prepare statements */
         
         _customer_login_statement = _customer_db.prepareStatement(_customer_login_sql);
@@ -516,49 +505,7 @@ public class Query {
         
         /* Insert your code for fastsearch here */
         
-        _search_statement.clearParameters();
-        _search_statement.setString(1, '%' + movie_title + '%');
-        ResultSet movie_set = _search_statement.executeQuery();
-
-        _director_fast_statement.clearParameters();
-        _director_fast_statement.setString(1, '%' + movie_title + '%');
-        ResultSet director_set = _director_fast_statement.executeQuery();
-
-        _actor_fast_statement.clearParameters();
-        _actor_fast_statement.setString(1, '%' + movie_title + '%');
-        ResultSet actor_set = _actor_fast_statement.executeQuery();
-
-        while (movie_set.next()){
-            int mid = movie_set.getInt(1);
-            System.out.println("ID: " + mid + " NAME: "
-                    + movie_set.getString(2) + " YEAR: "
-                    + movie_set.getString(3));
         
-            while (director_set.next()){
-                if (director_set.getInt(1) == mid) {
-                    System.out.println("\t\tDirector: " + director_set.getString(4)
-                            + " " + director_set.getString(3));
-                }
-                else {
-                    break;
-                }
-            } 
-
-            while (actor_set.next()){
-                if (actor_set.getInt(1) == mid) {
-                    System.out.println("\t\tActor: " + actor_set.getString(4)
-                            + " " + actor_set.getString(3));
-                }
-                else {
-                    break;
-                } 
-            } 
-        }
-        movie_set.close();
-        director_set.close();
-        actor_set.close();
-        System.out.println();
-
         
         /* End of fastsearch code */
         
